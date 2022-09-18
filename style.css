@@ -1,0 +1,41 @@
+* {
+  margin: 0;
+}
+
+.calculatorBody {
+  width: 400px;
+  height: 600px;
+  border: 3px solid black;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+}
+
+.displayArea {
+  width: 250px;
+  height: 100px;
+  border: 3px solid blue;
+}
+
+#buttonArea {
+  width: 300px;
+  height: 300px;
+  border: 3px solid orange;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+#numberButtonRow0,
+#numberButtonRow1,
+#numberButtonRow2,
+#numberButtonRow3 {
+  display: flex;
+  flex: 1 1 100%;
+}
+
+.numberButton {
+  border: 3px solid black;
+  flex: 1 1 100%;
+}
+
