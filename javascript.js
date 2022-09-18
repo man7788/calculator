@@ -1,19 +1,24 @@
-function add(num1, num2) {
- result = num1 + num2;
- return result;
+function add(term1, term2) {
+ sum = term1 + term2;
+ return sum;
 }
 
-function subtract(baseNum, subtractNum) {
-  result = baseNum - subtractNum;
-  return result;
+function subtract(baseTerm, subtractFromBase) {
+  difference = baseTerm - subtractFromBase;
+  return difference;
  }
 
- function multiply(num1, num2) {
-  result = num1 * num2;
-  return result;
+ function multiply(factor1, factor2) {
+  product = factor1 * factor2;
+  return product;
  }
 
  function divide(dividend, divisor) {
-  result = dividend / divisor;
+  quotient = dividend / divisor;
+  return quotient;
+ }
+
+ function operate(inputNum1, inputNum2, mathOperator) {
+  result = mathOperator(inputNum1, inputNum2);
   return result;
  }
