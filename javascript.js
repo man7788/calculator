@@ -151,6 +151,7 @@ let rightOfOperator;
 let foundOperator;
 let regexLeft = /\d+/;
 let regexRight = /\d+$/;
+let regexPattern = /\d+[×÷+−]\d/;
 
 let testDigit = document.createElement('div');
 const immediateOperator = document.querySelectorAll('.operatorButton');
@@ -178,6 +179,9 @@ function appendNumber2() {
   for (const num of clickNumber) {
     num.removeEventListener('click', appendNumber2);
   };
+  for (const opt of clickOperator) {
+    opt.removeEventListener('click', replaceOperator);
+  };
   for (const imnum of immediateNumber) {
     imnum.addEventListener('click', appendImdNumber);
   };
@@ -195,18 +199,39 @@ function appendOperator() {
   for (const opt of clickOperator) {
     opt.removeEventListener('click', appendOperator);
   };
+  for (const opt of clickOperator) {
+    opt.addEventListener('click', replaceOperator);
+  };
   console.log('appopt working');
   console.log(testDigit.textContent);
 };
 
-// Fix doubling operator
-// Add ability to replace old operator with newer input
+function replaceOperator() {
+  console.log('reopt working');
+  console.log(testDigit.textContent);
+  testDigit.textContent = testDigit.textContent.replace(regexOperator, this.textContent);
+};
+
 function appendImdOperator() {
   console.log('imopt working');
   console.log(testDigit.textContent);
   // Calculate two numbers store in textDigit
   finalNumber()
-  testDigit.textContent = displayRespond.textContent + this.textContent; 
+  testDigit.textContent = displayRespond.textContent + this.textContent;
+  // Prevent stacking operator and stop immediate calculation
+  for (const opt of clickOperator) {
+    opt.removeEventListener('click', appendImdOperator);
+  };
+  // Replace repeating operator input
+  for (const opt of clickOperator) {
+    opt.addEventListener('click', replaceImdOperator);
+  };
+};
+
+function replaceImdOperator() {
+  console.log('reimopt working');
+  console.log(testDigit.textContent);
+  testDigit.textContent = testDigit.textContent.replace(regexOperator, this.textContent);
 };
 
 function appendImdNumber() {
@@ -214,17 +239,26 @@ function appendImdNumber() {
   testDigit.textContent += this.textContent;
   console.log('imnum working');
   console.log(testDigit.textContent);
+  for (const opt of clickOperator) {
+    opt.removeEventListener('click', replaceImdOperator);
+  };
+  for (const opt of clickOperator) {
+    opt.addEventListener('click', appendImdOperator);
+  };
 };
 
 function finalNumber() {
-leftOfOperator = regexLeft.exec(testDigit.textContent);
-rightOfOperator = regexRight.exec(testDigit.textContent);
-foundOperator = regexOperator.exec(testDigit.textContent);
-leftOfOperator = Number(leftOfOperator[0]);
-rightOfOperator = Number(rightOfOperator[0]);
-let sumResult = operate(leftOfOperator, rightOfOperator, foundOperator);
-// console.log(sumResult);
-displayRespond.textContent = sumResult;
+  if (regexPattern.test(testDigit.textContent)) {
+    console.log('finalNumber working');
+    leftOfOperator = regexLeft.exec(testDigit.textContent);
+    rightOfOperator = regexRight.exec(testDigit.textContent);
+    foundOperator = regexOperator.exec(testDigit.textContent);
+    leftOfOperator = Number(leftOfOperator[0]);
+    rightOfOperator = Number(rightOfOperator[0]);
+    let sumResult = operate(leftOfOperator, rightOfOperator, foundOperator);
+    // console.log(sumResult);
+    displayRespond.textContent = sumResult;
+  };
 };
 
 for (const num of clickNumber) {
