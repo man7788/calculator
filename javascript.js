@@ -149,41 +149,68 @@ const clickOperateNow = document.querySelector('.operateNow');
 let leftOfOperator 
 let rightOfOperator;
 let foundOperator;
-let regexLeft = /\d+/;
-let regexRight = /\d+$/;
+let regexLeft = /\d+\.?\d+/;
+let regexRight = /\d*\.*\d+$/;
 let regexPattern = /\d+[×÷+−]\d/;
+
+// let testFor = '100-347.34'
+// let testDone = regexRight.exec(testFor);
+// console.log(testDone);
 
 let testDigit = document.createElement('div');
 const immediateOperator = document.querySelectorAll('.operatorButton');
 const immediateNumber = document.querySelectorAll('.numberButton');
+let imdDisplay = '';
 
 function appendNumber() {
   displayRespond.textContent += this.textContent;
   testDigit.textContent += this.textContent;
-  // Turn off current number listener for appendNumber2
-  for (const num of clickNumber) {
-    num.removeEventListener('click', appendNumber);
-  };
-  // Go to appendNumber2 preparing for immediate calculation
-  for (const num of clickNumber) {
-    num.addEventListener('click', appendNumber2);
-  };
   console.log('appnum working');
   console.log(testDigit.textContent);
 };
+// Active: appendNumber(), 272
+        // appendOperator(), 276
 
+function appendOperator() {
+  if (displayRespond.textContent !== '') {
+    displayRespond.textContent += this.textContent;
+    testDigit.textContent += this.textContent;
+    // Prevent doubling operator
+    for (const opt of clickOperator) {
+      opt.removeEventListener('click', appendOperator);
+    };
+    // No longer useful for immediate calculation
+    for (const num of clickNumber) {
+      num.removeEventListener('click', appendNumber);
+    };
+    for (const num of clickNumber) {
+      num.addEventListener('click', appendNumber2);
+    };
+    // Go replace if repeated operator input
+    for (const opt of clickOperator) {
+      opt.addEventListener('click', replaceOperator);
+    };
+    console.log('appopt working');
+    console.log(testDigit.textContent);
+  };
+};
+// Active: appendNumber2(), 183
+        // replaceOperator(), 187
+
+function replaceOperator() {
+  console.log('reopt working');
+  console.log(testDigit.textContent);
+  testDigit.textContent = testDigit.textContent.replace(regexOperator, this.textContent);
+};
+// Active: appendNumber2(), 183
+        // replaceOperator(), 187
+    
 function appendNumber2() {
   displayRespond.textContent += this.textContent;
   testDigit.textContent += this.textContent;
-  // Turn off current number listener for immediate calculation
-  for (const num of clickNumber) {
-    num.removeEventListener('click', appendNumber2);
-  };
+// No longer useful for immediate calculation
   for (const opt of clickOperator) {
     opt.removeEventListener('click', replaceOperator);
-  };
-  for (const imnum of immediateNumber) {
-    imnum.addEventListener('click', appendImdNumber);
   };
   for (const imopt of immediateOperator) {
     imopt.addEventListener('click', appendImdOperator);
@@ -191,51 +218,54 @@ function appendNumber2() {
   console.log('appnum2 working');
   console.log(testDigit.textContent);
 };
+// Active: appendNumber2(), 183
+        // appendImdOperator(), 217
 
-function appendOperator() {
-  displayRespond.textContent += this.textContent;
-  testDigit.textContent += this.textContent;
-  // Prevent doubling operator
-  for (const opt of clickOperator) {
-    opt.removeEventListener('click', appendOperator);
-  };
-  for (const opt of clickOperator) {
-    opt.addEventListener('click', replaceOperator);
-  };
-  console.log('appopt working');
-  console.log(testDigit.textContent);
-};
-
-function replaceOperator() {
-  console.log('reopt working');
-  console.log(testDigit.textContent);
-  testDigit.textContent = testDigit.textContent.replace(regexOperator, this.textContent);
-};
+// --------------------------------------------
+// Turnaround: From finalResult()
+        // Active: appendImdNumber(), 213
+                // appendImdOperator(), 217 
+// --------------------------------------------
+// Turnaround: From appendImdNumber()
+        // Active: appendImdNumber(), 213
+                // appendImdOperator(), 269
 
 function appendImdOperator() {
   console.log('imopt working');
   console.log(testDigit.textContent);
-  // Calculate two numbers store in textDigit
-  finalNumber()
+  finalNumber();
+  imdDisplay = '';
   testDigit.textContent = displayRespond.textContent + this.textContent;
-  // Prevent stacking operator and stop immediate calculation
+  // No longer useful for immediate calculation
+  for (const num of clickNumber) {
+    num.removeEventListener('click', appendNumber2);
+  };
+  for (const num of clickNumber) {
+    num.addEventListener('click', appendImdNumber);
+  };
+  // Prevent doubling operator
   for (const opt of clickOperator) {
     opt.removeEventListener('click', appendImdOperator);
   };
-  // Replace repeating operator input
+  // Go replace if repeated operator input
   for (const opt of clickOperator) {
     opt.addEventListener('click', replaceImdOperator);
   };
 };
+// Active: appendImdNumber(), 213
+        // replaceImdOperator(), 243
 
 function replaceImdOperator() {
   console.log('reimopt working');
   console.log(testDigit.textContent);
   testDigit.textContent = testDigit.textContent.replace(regexOperator, this.textContent);
 };
+// Active: appendImdNumber(), 213
+        // replaceImdOperator(), 243
 
 function appendImdNumber() {
-  displayRespond.textContent = this.textContent;
+  imdDisplay += this.textContent;
+  displayRespond.textContent = imdDisplay;
   testDigit.textContent += this.textContent;
   console.log('imnum working');
   console.log(testDigit.textContent);
@@ -246,6 +276,12 @@ function appendImdNumber() {
     opt.addEventListener('click', appendImdOperator);
   };
 };
+// Active: appendImdNumber(), 213
+        // appendImdOperator(), 269
+
+function roundToTwo(num) {
+  return +(Math.round(num + "e+6")  + "e-6");
+}
 
 function finalNumber() {
   if (regexPattern.test(testDigit.textContent)) {
@@ -253,11 +289,19 @@ function finalNumber() {
     leftOfOperator = regexLeft.exec(testDigit.textContent);
     rightOfOperator = regexRight.exec(testDigit.textContent);
     foundOperator = regexOperator.exec(testDigit.textContent);
-    leftOfOperator = Number(leftOfOperator[0]);
-    rightOfOperator = Number(rightOfOperator[0]);
+    // leftOfOperator = Number(leftOfOperator[0]);
+    // rightOfOperator = Number(rightOfOperator[0]);
+    console.log(testDigit.textContent);
+    console.log(leftOfOperator);
+    console.log(rightOfOperator);
+    console.log(foundOperator);
     let sumResult = operate(leftOfOperator, rightOfOperator, foundOperator);
     // console.log(sumResult);
+    sumResult = roundToTwo(sumResult);
     displayRespond.textContent = sumResult;
+    for (const num of clickNumber) {
+      num.removeEventListener('click', appendNumber2);
+    };
   };
 };
 
