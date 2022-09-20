@@ -145,31 +145,85 @@ for (i = 15; i < 20; i++) {
 const clickNumber = document.querySelectorAll('.numberButton');
 const clickOperator = document.querySelectorAll('.operatorButton');
 const clickOperateNow = document.querySelector('.operateNow');
+
 let leftOfOperator 
 let rightOfOperator;
 let foundOperator;
 let regexLeft = /\d+/;
 let regexRight = /\d+$/;
 
+let testDigit = document.createElement('div');
+const immediateOperator = document.querySelectorAll('.operatorButton');
+const immediateNumber = document.querySelectorAll('.numberButton');
+
 function appendNumber() {
-  displayRespond.textContent = displayRespond.textContent + this.textContent;
-}
+  displayRespond.textContent += this.textContent;
+  testDigit.textContent += this.textContent;
+  // Turn off current number listener for appendNumber2
+  for (const num of clickNumber) {
+    num.removeEventListener('click', appendNumber);
+  };
+  // Go to appendNumber2 preparing for immediate calculation
+  for (const num of clickNumber) {
+    num.addEventListener('click', appendNumber2);
+  };
+  console.log('appnum working');
+  console.log(testDigit.textContent);
+};
+
+function appendNumber2() {
+  displayRespond.textContent += this.textContent;
+  testDigit.textContent += this.textContent;
+  // Turn off current number listener for immediate calculation
+  for (const num of clickNumber) {
+    num.removeEventListener('click', appendNumber2);
+  };
+  for (const imnum of immediateNumber) {
+    imnum.addEventListener('click', appendImdNumber);
+  };
+  for (const imopt of immediateOperator) {
+    imopt.addEventListener('click', appendImdOperator);
+  };
+  console.log('appnum2 working');
+  console.log(testDigit.textContent);
+};
 
 function appendOperator() {
-  displayRespond.textContent = displayRespond.textContent + this.textContent;
+  displayRespond.textContent += this.textContent;
+  testDigit.textContent += this.textContent;
+  // Prevent doubling operator
   for (const opt of clickOperator) {
     opt.removeEventListener('click', appendOperator);
   };
+  console.log('appopt working');
+  console.log(testDigit.textContent);
 };
 
-function findNumber() {
-leftOfOperator = regexLeft.exec(displayRespond.textContent);
-rightOfOperator = regexRight.exec(displayRespond.textContent);
-foundOperator = regexOperator.exec(displayRespond.textContent);
+// Fix doubling operator
+// Add ability to replace old operator with newer input
+function appendImdOperator() {
+  console.log('imopt working');
+  console.log(testDigit.textContent);
+  // Calculate two numbers store in textDigit
+  finalNumber()
+  testDigit.textContent = displayRespond.textContent + this.textContent; 
+};
+
+function appendImdNumber() {
+  displayRespond.textContent = this.textContent;
+  testDigit.textContent += this.textContent;
+  console.log('imnum working');
+  console.log(testDigit.textContent);
+};
+
+function finalNumber() {
+leftOfOperator = regexLeft.exec(testDigit.textContent);
+rightOfOperator = regexRight.exec(testDigit.textContent);
+foundOperator = regexOperator.exec(testDigit.textContent);
 leftOfOperator = Number(leftOfOperator[0]);
 rightOfOperator = Number(rightOfOperator[0]);
 let sumResult = operate(leftOfOperator, rightOfOperator, foundOperator);
-console.log(sumResult);
+// console.log(sumResult);
 displayRespond.textContent = sumResult;
 };
 
@@ -181,12 +235,7 @@ for (const opt of clickOperator) {
   opt.addEventListener('click', appendOperator)
 };
 
-clickOperateNow.addEventListener('click', findNumber);
-
-// let test = '22222+44444';
-// let regexTest = /\+/;
-// let testResult = regexTest.exec(test);
-// console.log(testResult);
+clickOperateNow.addEventListener('click', finalNumber);
 
 
 // Listen for clicks, record every number as number_input: 1, before any operator input clicked
@@ -224,4 +273,37 @@ clickOperateNow.addEventListener('click', findNumber);
     // Match operator parameter with operator variable;
     // Run operator() with pulled value variables;
     // Display operator() result;
-  
+
+// After two numbers and an operator,
+// if an operator being pressed again,
+// calculate and display the result,
+// but not showing the operator.
+// As a number enter after the second operator,
+// calculate and display the result.
+// Repeat the process until = is entered,
+// calculate display the final result.
+
+// <Problems now facing with simple calculator>
+  // Should prevent chaining operators,
+  // but allow proceeding operator to be entered for immediate result,
+  // also replace each repeated operator to lastest one
+  // <Solution>
+    // Add event listener back after each proceeding operator;
+    // Wipe out previous operator, use latter one;
+
+  // Should implement calculating function for each proceeding operator.
+  // <Solution>
+    // Invoke calculator function for each proceeding operator;
+    // Text content immediate result;
+
+                          // Next     Next
+// (Display,,,,Storage,,,,Operator,,,,Number)
+// [2222+2222], 2222+2222,  +,        No,
+// [4444],      Empty,      No,       1111,
+// [1111],      4444+1111,  +,        No,
+// [5555],      Empty,      No,       1111,
+// [1111],      5555+1111,  +,        No,
+// [6666],      Empty       No,       1111,
+// [1111],      6666+1111   =,        No,
+// [7777],
+
