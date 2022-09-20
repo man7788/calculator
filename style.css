@@ -37,7 +37,8 @@
 .numberButton,
 .operatorButton,
 .placeHolder,
-.operateNow {
+.operateNow,
+.clearAll {
   border: 3px solid black;
   flex: 1 1 100%;
 }

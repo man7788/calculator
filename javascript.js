@@ -48,11 +48,14 @@ function operate(inputNum1, inputNum2, mathOperator) {
 
 // --------------------Display--------------------
 const displayRespond = document.querySelector('#displayWindow')
+displayRespond.textContent = 0;
 
 // --------------------Buttons--------------------
 let regexNum = /[0-9]/;
 let regexOperator = /[×÷+−]/;
+let regexCA = /CA/;
 let buttonRowList = [];
+
 
 let i = 0;
 for (i = 0; i < 4; i++) {
@@ -63,7 +66,7 @@ for (i = 0; i < 4; i++) {
 }
 
 let buttonList = ['a', 7, 8, 9, '×', 'a', 4, 5, 6, '÷', 
-   'a', 1, 2, 3, '+', 'a', 0, '.', '−', '=',];
+   'a', 1, 2, 3, '+', 'CA', 0, '.', '−', '=',];
   
 for (i = 0; i < 5; i++) {
   const clickButton = document.createElement('div');
@@ -133,6 +136,10 @@ for (i = 15; i < 20; i++) {
     clickButton.setAttribute('id', buttonList[i]);
     clickButton.classList.add('operateNow');
     clickButton.textContent = buttonList[i];
+  } else if (regexCA.test(buttonList[i])) {
+    clickButton.setAttribute('id', buttonList[i]);
+    clickButton.classList.add('clearAll');
+    clickButton.textContent = buttonList[i];
   } else {
     clickButton.setAttribute('id', buttonList[i]);
     clickButton.classList.add('placeHolder');
@@ -161,9 +168,12 @@ let testDigit = document.createElement('div');
 const immediateOperator = document.querySelectorAll('.operatorButton');
 const immediateNumber = document.querySelectorAll('.numberButton');
 let imdDisplay = '';
+const clickClearAll = document.querySelector('.clearAll');
 
 function appendNumber() {
-  displayRespond.textContent += this.textContent;
+  imdDisplay += this.textContent;
+  displayRespond.textContent = imdDisplay;
+  // displayRespond.textContent += this.textContent;
   testDigit.textContent += this.textContent;
   console.log('appnum working');
   console.log(testDigit.textContent);
@@ -172,7 +182,7 @@ function appendNumber() {
         // appendOperator(), 276
 
 function appendOperator() {
-  if (displayRespond.textContent !== '') {
+  if (displayRespond.textContent !== '0') {
     displayRespond.textContent += this.textContent;
     testDigit.textContent += this.textContent;
     // Prevent doubling operator
@@ -289,12 +299,12 @@ function finalNumber() {
     leftOfOperator = regexLeft.exec(testDigit.textContent);
     rightOfOperator = regexRight.exec(testDigit.textContent);
     foundOperator = regexOperator.exec(testDigit.textContent);
-    // leftOfOperator = Number(leftOfOperator[0]);
-    // rightOfOperator = Number(rightOfOperator[0]);
-    console.log(testDigit.textContent);
-    console.log(leftOfOperator);
-    console.log(rightOfOperator);
-    console.log(foundOperator);
+    leftOfOperator = Number(leftOfOperator[0]);
+    rightOfOperator = Number(rightOfOperator[0]);
+    // console.log(testDigit.textContent);
+    // console.log(leftOfOperator);
+    // console.log(rightOfOperator);
+    // console.log(foundOperator);
     let sumResult = operate(leftOfOperator, rightOfOperator, foundOperator);
     // console.log(sumResult);
     sumResult = roundToTwo(sumResult);
@@ -302,6 +312,35 @@ function finalNumber() {
     for (const num of clickNumber) {
       num.removeEventListener('click', appendNumber2);
     };
+  };
+};
+
+function clearAll() {
+  displayRespond.textContent = 0;;
+  testDigit.textContent = '';
+  imdDisplay = '';
+  console.log('clearall working');
+  for (const num of clickNumber) {
+    num.removeEventListener('click', appendNumber2);
+  };
+  for (const num of clickNumber) {
+    num.removeEventListener('click', appendImdNumber);
+  };
+  for (const opt of clickOperator) {
+    opt.removeEventListener('click', appendImdOperator)
+  };
+  for (const opt of clickOperator) {
+    opt.removeEventListener('click', replaceOperator)
+  };
+  for (const opt of clickOperator) {
+    opt.removeEventListener('click', replaceImdOperator)
+  };
+  for (const num of clickNumber) {
+    num.addEventListener('click', appendNumber);
+  };
+  
+  for (const opt of clickOperator) {
+    opt.addEventListener('click', appendOperator)
   };
 };
 
@@ -314,6 +353,12 @@ for (const opt of clickOperator) {
 };
 
 clickOperateNow.addEventListener('click', finalNumber);
+
+clickClearAll.addEventListener('click', clearAll);
+
+
+
+
 
 
 // Listen for clicks, record every number as number_input: 1, before any operator input clicked
