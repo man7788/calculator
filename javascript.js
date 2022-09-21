@@ -17,6 +17,9 @@ function multiply(factor1, factor2) {
 
 function divide(dividend, divisor) {
   let quotient = dividend / divisor;
+  if (divisor === 0) {
+    return 'Divide by zero error'
+  };
   return quotient;
 }
 
@@ -156,19 +159,22 @@ const clickOperateNow = document.querySelector('.operateNow');
 let leftOfOperator 
 let rightOfOperator;
 let foundOperator;
-let regexLeft = /\d+\.?\d+/;
+let regexLeft = /\d*\.?\d+/;
 let regexRight = /\d*\.*\d+$/;
 let regexPattern = /\d+[×÷+−]\d/;
 
-// let testFor = '100-347.34'
-// let testDone = regexRight.exec(testFor);
-// console.log(testDone);
+// let testFor = '2+2'
+// let testDone = regexLeft.exec(testFor);
+// let testDone2 = regexRight.exec(testFor);
+// console.log(testDone + 'left');
+// console.log(testDone2 + 'right');
 
 let testDigit = document.createElement('div');
 const immediateOperator = document.querySelectorAll('.operatorButton');
 const immediateNumber = document.querySelectorAll('.numberButton');
 let imdDisplay = '';
 const clickClearAll = document.querySelector('.clearAll');
+const zeroReset = document.querySelector('#buttonArea');
 
 function appendNumber() {
   imdDisplay += this.textContent;
@@ -306,11 +312,17 @@ function finalNumber() {
     // console.log(rightOfOperator);
     // console.log(foundOperator);
     let sumResult = operate(leftOfOperator, rightOfOperator, foundOperator);
-    // console.log(sumResult);
-    sumResult = roundToTwo(sumResult);
-    displayRespond.textContent = sumResult;
-    for (const num of clickNumber) {
-      num.removeEventListener('click', appendNumber2);
+    console.log(isNaN(sumResult));
+    if (isNaN(sumResult)) {
+      displayRespond.textContent = sumResult;
+      zeroReset.addEventListener('click', () => {
+        zeroReset.addEventListener('click', clearAll)
+      });
+    } else { sumResult = roundToTwo(sumResult);
+      displayRespond.textContent = sumResult;
+      for (const num of clickNumber) {
+        num.removeEventListener('click', appendNumber2);
+      };
     };
   };
 };
@@ -336,12 +348,12 @@ function clearAll() {
     opt.removeEventListener('click', replaceImdOperator)
   };
   for (const num of clickNumber) {
-    num.addEventListener('click', appendNumber);
+    num.addEventListener('click', appendNumber)
   };
-  
   for (const opt of clickOperator) {
     opt.addEventListener('click', appendOperator)
   };
+  zeroReset.removeEventListener('click', clearAll);
 };
 
 for (const num of clickNumber) {
