@@ -38,7 +38,8 @@
 .operatorButton,
 .placeHolder,
 .operateNow,
-.clearAll {
+.clearAll,
+.decimalButton {
   border: 3px solid black;
   flex: 1 1 100%;
 }

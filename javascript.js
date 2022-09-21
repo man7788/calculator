@@ -57,8 +57,8 @@ displayRespond.textContent = 0;
 let regexNum = /[0-9]/;
 let regexOperator = /[×÷+−]/;
 let regexCA = /CA/;
+let regexDecimal = /./;
 let buttonRowList = [];
-
 
 let i = 0;
 for (i = 0; i < 4; i++) {
@@ -143,6 +143,10 @@ for (i = 15; i < 20; i++) {
     clickButton.setAttribute('id', buttonList[i]);
     clickButton.classList.add('clearAll');
     clickButton.textContent = buttonList[i];
+  } else if (regexDecimal.test(buttonList[i])) {
+    clickButton.setAttribute('id', buttonList[i]);
+    clickButton.classList.add('decimalButton');
+    clickButton.textContent = buttonList[i];
   } else {
     clickButton.setAttribute('id', buttonList[i]);
     clickButton.classList.add('placeHolder');
@@ -162,6 +166,8 @@ let foundOperator;
 let regexLeft = /\d*\.?\d+/;
 let regexRight = /\d*\.*\d+$/;
 let regexPattern = /\d+[×÷+−]\d/;
+let regexDecimalRight = /[×÷+−<=?]\d+\./;
+let regexDecimalLeft = /\d+\./;
 
 // let testFor = '2+2'
 // let testDone = regexLeft.exec(testFor);
@@ -175,11 +181,11 @@ const immediateNumber = document.querySelectorAll('.numberButton');
 let imdDisplay = '';
 const clickClearAll = document.querySelector('.clearAll');
 const zeroReset = document.querySelector('#buttonArea');
+const clickDecimal = document.querySelector('.decimalButton');
 
 function appendNumber() {
   imdDisplay += this.textContent;
   displayRespond.textContent = imdDisplay;
-  // displayRespond.textContent += this.textContent;
   testDigit.textContent += this.textContent;
   console.log('appnum working');
   console.log(testDigit.textContent);
@@ -220,8 +226,19 @@ function replaceOperator() {
 };
 // Active: appendNumber2(), 183
         // replaceOperator(), 187
-    
+
+
+let testFor = '5';
+let testDone = regexDecimalLeft.exec(testFor);
+console.log(testDone);
+
 function appendNumber2() {
+  if (!regexDecimalRight.test(displayRespond.textContent)) {
+    clickDecimal.addEventListener('click', appendDecimal);
+    console.log('yes');
+  } else {
+    clickDecimal.removeEventListener('click', appendDecimal);
+  };
   displayRespond.textContent += this.textContent;
   testDigit.textContent += this.textContent;
 // No longer useful for immediate calculation
@@ -283,6 +300,12 @@ function appendImdNumber() {
   imdDisplay += this.textContent;
   displayRespond.textContent = imdDisplay;
   testDigit.textContent += this.textContent;
+  if (!regexDecimalLeft.test(displayRespond.textContent)) {
+    clickDecimal.addEventListener('click', appendDecimal);
+    console.log('yes');
+  } else {
+    clickDecimal.removeEventListener('click', appendDecimal);
+  };
   console.log('imnum working');
   console.log(testDigit.textContent);
   for (const opt of clickOperator) {
@@ -354,7 +377,15 @@ function clearAll() {
     opt.addEventListener('click', appendOperator)
   };
   zeroReset.removeEventListener('click', clearAll);
+  clickDecimal.addEventListener('click', appendDecimal);
 };
+
+function appendDecimal() {
+  imdDisplay += this.textContent;
+  displayRespond.textContent += this.textContent;
+  testDigit.textContent += this.textContent;
+  this.removeEventListener('click', appendDecimal);
+  }; 
 
 for (const num of clickNumber) {
   num.addEventListener('click', appendNumber);
@@ -368,6 +399,9 @@ clickOperateNow.addEventListener('click', finalNumber);
 
 clickClearAll.addEventListener('click', clearAll);
 
+clickDecimal.addEventListener('click', appendDecimal);
+
+// Fix prevent no number after decimal to enter operator or calculate
 
 
 
