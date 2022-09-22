@@ -179,6 +179,7 @@ let foundOperator;
 let regexLeft = /\d*\.?\d+/;
 let regexRight = /\d*\.*\d+$/;
 let regexPattern = /\d+[×÷+−]\d/;
+
 let regexDecLeftHang = /\d+\.$/;
 let regexDecRightHang = /[×÷+−<=?]\d+\.$/;
 
@@ -186,13 +187,13 @@ let regexDecimalLeft = /\d+\./;
 let regexDecimalRight = /[×÷+−<=?]\d+\./;
 
 let regexDecAfterOpt = /\d+[×÷+−]$/
-let zeroDecimal = /0\./;
+let zeroDecimal = /0\.$/;
 let chainingZero = /^0$/;
 
-let testFor = '5.5+5'
-let testDone = regexDecAfterOpt.test(testFor);
+// let testFor = '5.5+5'
+// let testDone = regexDecAfterOpt.test(testFor);
 // let testDone2 = regexDecRightHang.test(testFor);
-console.log(testDone);
+// console.log(testDone);
 // console.log(testDone2);
 
 function appendNumber() {
@@ -214,7 +215,6 @@ function appendNumber() {
   for (const opt of clickOperator) {
     opt.addEventListener('click', appendImdOperator);
   };
-  // clickDecimal.addEventListener('click', appendDecimal);
   console.log('appnum working');
   console.log(testDigit.textContent);
 };
@@ -239,13 +239,17 @@ function appendImdOperator() {
     for (const opt of clickOperator) {
       opt.addEventListener('click', replaceOperator);
     };
+    for (const num of clickNumber) {
+      num.addEventListener('click', appendNumber);
+    };  
     clickDecimal.addEventListener('click', appendDecimal)
+    clickClearKey.addEventListener('click', clearLastKey);
     console.log('imopt working');
     console.log(testDigit.textContent);
   };
 };
 
-function roundToTwo(num) {
+function roundToN(num) {
   return +(Math.round(num + "e+6")  + "e-6");
 }
 function finalNumber() {
@@ -257,10 +261,6 @@ function finalNumber() {
       foundOperator = regexOperator.exec(testDigit.textContent);
       leftOfOperator = Number(leftOfOperator[0]);
       rightOfOperator = Number(rightOfOperator[0]);
-      // console.log(testDigit.textContent);
-      // console.log(leftOfOperator);
-      // console.log(rightOfOperator);
-      // console.log(foundOperator);
       let sumResult = operate(leftOfOperator, rightOfOperator, foundOperator);
       console.log(isNaN(sumResult));
       if (isNaN(sumResult)) {
@@ -269,12 +269,14 @@ function finalNumber() {
           zeroReset.addEventListener('click', clearAll)
         });
       } else {
-        sumResult = roundToTwo(sumResult);
+        sumResult = roundToN(sumResult);
         displayRespond.textContent = sumResult;
         };
         console.log('finalNumber working');
         for (const num of clickNumber) {
           num.removeEventListener('click', appendNumber);
+        clickDecimal.removeEventListener('click', appendDecimal);
+        clickClearKey.removeEventListener('click', clearLastKey);
         };
       };
     };
@@ -311,14 +313,19 @@ function appendDecimal() {
 
 // Decimals not coming back after removed
 function clearLastKey() {
+  if (!regexDecAfterOpt.test(testDigit.textContent)) {
   imdDisplay = imdDisplay.slice(0, -1);
   displayRespond.textContent = displayRespond.textContent.slice(0, -1);
   testDigit.textContent = testDigit.textContent.slice(0, -1);
+  };
   if (!regexDecLeftHang.test(imdDisplay) || 
     !regexDecLeftHang.test(displayRespond.textContent) ||
     !regexDecLeftHang.test(testDigit.textContent)) {
     clickDecimal.addEventListener('click', appendDecimal);
     };
+  if (displayRespond.textContent.length === 0) {
+    displayRespond.textContent = 0;
+  };
 };
 
 for (const num of clickNumber) {
@@ -331,7 +338,7 @@ clickClearAll.addEventListener('click', clearAll);
 
 clickDecimal.addEventListener('click', appendDecimal);
 
-// clickClearKey.addEventListener('click', clearLastKey);
+clickClearKey.addEventListener('click', clearLastKey);
 
 // let teststring = '1234567'
 // let stringdone = teststring.slice(0, -1);
