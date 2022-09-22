@@ -327,6 +327,9 @@ function finalNumber() {
         console.log('finalNumber working');
         for (const num of clickNumber) {
           num.removeEventListener('click', appendNumber);
+        for (const num of clickNumber) {
+          num.removeEventListener('click', appendImdNumber);
+        };
         clickDecimal.removeEventListener('click', appendDecimal);
         clickClearKey.removeEventListener('click', clearLastKey);
         };
@@ -396,3 +399,22 @@ clickClearAll.addEventListener('click', clearAll);
 clickDecimal.addEventListener('click', appendDecimal);
 
 clickClearKey.addEventListener('click', clearLastKey);
+
+let keyboardList = {
+  Enter: '=',
+  Backspace: 'CK',
+  Escape: 'CA',
+  '-':'−', 
+  '*':'×', 
+  '/':'÷',
+};
+
+window.addEventListener('keydown', (e) => {
+  for (let key in keyboardList) {
+    if (key === e.key) {
+      document.getElementById(keyboardList[key]).click();
+    };
+  };
+  document.getElementById(e.key).click();
+});
+
