@@ -56,8 +56,10 @@ displayRespond.textContent = 0;
 // --------------------Buttons--------------------
 let regexNum = /[0-9]/;
 let regexOperator = /[×÷+−]/;
+let regexCK = /CK/;
 let regexCA = /CA/;
 let regexDecimal = /./;
+let regexOperate = /=/;
 let buttonRowList = [];
 
 let i = 0;
@@ -69,7 +71,7 @@ for (i = 0; i < 4; i++) {
 }
 
 let buttonList = ['a', 7, 8, 9, '×', 'a', 4, 5, 6, '÷', 
-   'a', 1, 2, 3, '+', 'CA', 0, '.', '−', '=',];
+   'CK', 1, 2, 3, '+', 'CA', 0, '.', '−', '=',];
   
 for (i = 0; i < 5; i++) {
   const clickButton = document.createElement('div');
@@ -117,6 +119,10 @@ for (i = 10; i < 15; i++) {
     clickButton.setAttribute('id', buttonList[i]);
     clickButton.classList.add('operatorButton');
     clickButton.textContent = buttonList[i];
+  } else if (regexCK.test(buttonList[i])) {
+    clickButton.setAttribute('id', buttonList[i]);
+    clickButton.classList.add('clearKey');
+    clickButton.textContent = buttonList[i];
   } else {
     clickButton.setAttribute('id', buttonList[i]);
     clickButton.classList.add('placeHolder');
@@ -135,7 +141,7 @@ for (i = 15; i < 20; i++) {
     clickButton.setAttribute('id', buttonList[i]);
     clickButton.classList.add('operatorButton');
     clickButton.textContent = buttonList[i];
-  } else if (buttonList[i] === '=') {
+  } else if (regexOperate.test(buttonList[i])) {
     clickButton.setAttribute('id', buttonList[i]);
     clickButton.classList.add('operateNow');
     clickButton.textContent = buttonList[i];
@@ -159,6 +165,13 @@ for (i = 15; i < 20; i++) {
 const clickNumber = document.querySelectorAll('.numberButton');
 const clickOperator = document.querySelectorAll('.operatorButton');
 const clickOperateNow = document.querySelector('.operateNow');
+const clickClearKey = document.querySelector('.clearKey');
+const clickClearAll = document.querySelector('.clearAll');
+const clickDecimal = document.querySelector('.decimalButton');
+const zeroReset = document.querySelector('#buttonArea');
+
+let testDigit = document.createElement('div');
+let imdDisplay = '';
 
 let leftOfOperator 
 let rightOfOperator;
@@ -166,176 +179,79 @@ let foundOperator;
 let regexLeft = /\d*\.?\d+/;
 let regexRight = /\d*\.*\d+$/;
 let regexPattern = /\d+[×÷+−]\d/;
-let regexDecimalLeft = /\d+\./;
-let regexDecimalRight = /[×÷+−<=?]\d+\./;
 let regexDecLeftHang = /\d+\.$/;
 let regexDecRightHang = /[×÷+−<=?]\d+\.$/;
 
-let testFor = '543.+5.'
-let testDone = regexPattern.test(testFor);
+let regexDecimalLeft = /\d+\./;
+let regexDecimalRight = /[×÷+−<=?]\d+\./;
+
+let regexDecAfterOpt = /\d+[×÷+−]$/
+let zeroDecimal = /0\./;
+let chainingZero = /^0$/;
+
+let testFor = '5.5+5'
+let testDone = regexDecAfterOpt.test(testFor);
 // let testDone2 = regexDecRightHang.test(testFor);
 console.log(testDone);
 // console.log(testDone2);
 
-let testDigit = document.createElement('div');
-const immediateOperator = document.querySelectorAll('.operatorButton');
-const immediateNumber = document.querySelectorAll('.numberButton');
-let imdDisplay = '';
-const clickClearAll = document.querySelector('.clearAll');
-const zeroReset = document.querySelector('#buttonArea');
-const clickDecimal = document.querySelector('.decimalButton');
-
 function appendNumber() {
-  imdDisplay += this.textContent;
-  displayRespond.textContent = imdDisplay;
-  testDigit.textContent += this.textContent;
-  console.log('appnum working');
-  console.log(testDigit.textContent);
-};
-// Active: appendNumber(), 272
-        // appendOperator(), 276
-
-function appendOperator() {
-  if (!regexDecLeftHang.test(testDigit.textContent) ||
-    !regexDecLeftHang.test(testDigit.textContent)) {
-  if (displayRespond.textContent !== '0') {
-    displayRespond.textContent += this.textContent;
-    testDigit.textContent += this.textContent;
-    // Prevent doubling operator
-    for (const opt of clickOperator) {
-      opt.removeEventListener('click', appendOperator);
+  if (chainingZero.test(displayRespond.textContent) &&
+    chainingZero.test(this.textContent)) {
+    // console.log('no more zero');
+    return;
     };
-    // No longer useful for immediate calculation
-    for (const num of clickNumber) {
-      num.removeEventListener('click', appendNumber);
-    };
-    for (const num of clickNumber) {
-      num.addEventListener('click', appendNumber2);
-    };
-    // Go replace if repeated operator input
-    for (const opt of clickOperator) {
-      opt.addEventListener('click', replaceOperator);
-    };
-    console.log('appopt working');
-    console.log(testDigit.textContent);
-  };
-}};
-
-// Active: appendNumber2(), 183
-        // replaceOperator(), 187
-
-function replaceOperator() {
-  if (!regexDecLeftHang.test(testDigit.textContent) ||
-    !regexDecLeftHang.test(testDigit.textContent)) {
-    console.log('reopt working');
-    console.log(testDigit.textContent);
-    testDigit.textContent = testDigit.textContent.replace(regexOperator, this.textContent);
-  };
-}; 
-// Active: appendNumber2(), 183
-        // replaceOperator(), 187
-
-// let testFor = '5';
-// let testDone = regexDecimalLeft.exec(testFor);
-// console.log(testDone);
-
-function appendNumber2() {
-  if (!regexDecimalRight.test(displayRespond.textContent)) {
-    clickDecimal.addEventListener('click', appendDecimal);
-    console.log('yes');
+  if (zeroDecimal.test(displayRespond.textContent)) {
+    imdDisplay = displayRespond.textContent + this.textContent;
+    displayRespond.textContent = imdDisplay;
+    // console.log('upper working');
   } else {
-    clickDecimal.removeEventListener('click', appendDecimal);
+    imdDisplay += this.textContent;
+    displayRespond.textContent = imdDisplay;
+    // console.log('lower working');
   };
-  displayRespond.textContent += this.textContent;
   testDigit.textContent += this.textContent;
-// No longer useful for immediate calculation
-  for (const opt of clickOperator) {
-    opt.removeEventListener('click', replaceOperator);
-  };
-  for (const imopt of immediateOperator) {
-    imopt.addEventListener('click', appendImdOperator);
-  };
-  console.log('appnum2 working');
-  console.log(testDigit.textContent);
-};
-// Active: appendNumber2(), 183
-        // appendImdOperator(), 217
-
-// --------------------------------------------
-// Turnaround: From finalResult()
-        // Active: appendImdNumber(), 213
-                // appendImdOperator(), 217 
-// --------------------------------------------
-// Turnaround: From appendImdNumber()
-        // Active: appendImdNumber(), 213
-                // appendImdOperator(), 269
-
-function appendImdOperator() {
-  if (!regexDecLeftHang.test(testDigit.textContent) ||
-    !regexDecLeftHang.test(testDigit.textContent)) {
-    console.log('imopt working');
-    console.log(testDigit.textContent);
-    finalNumber();
-    imdDisplay = '';
-    testDigit.textContent = displayRespond.textContent + this.textContent;
-    // No longer useful for immediate calculation
-    for (const num of clickNumber) {
-      num.removeEventListener('click', appendNumber2);
-    };
-    for (const num of clickNumber) {
-      num.addEventListener('click', appendImdNumber);
-    };
-    // Prevent doubling operator
-    for (const opt of clickOperator) {
-      opt.removeEventListener('click', appendImdOperator);
-    };
-    // Go replace if repeated operator input
-    for (const opt of clickOperator) {
-      opt.addEventListener('click', replaceImdOperator);
-    };
-  };
-};
-// Active: appendImdNumber(), 213
-        // replaceImdOperator(), 243
-
-function replaceImdOperator() {
-  console.log('reimopt working');
-  console.log(testDigit.textContent);
-  testDigit.textContent = testDigit.textContent.replace(regexOperator, this.textContent);
-};
-// Active: appendImdNumber(), 213
-        // replaceImdOperator(), 243
-
-function appendImdNumber() {
-  imdDisplay += this.textContent;
-  displayRespond.textContent = imdDisplay;
-  testDigit.textContent += this.textContent;
-  if (!regexDecimalLeft.test(displayRespond.textContent)) {
-    clickDecimal.addEventListener('click', appendDecimal);
-    console.log('yes');
-  } else {
-    clickDecimal.removeEventListener('click', appendDecimal);
-  };
-  console.log('imnum working');
-  console.log(testDigit.textContent);
-  for (const opt of clickOperator) {
-    opt.removeEventListener('click', replaceImdOperator);
-  };
   for (const opt of clickOperator) {
     opt.addEventListener('click', appendImdOperator);
   };
+  // clickDecimal.addEventListener('click', appendDecimal);
+  console.log('appnum working');
+  console.log(testDigit.textContent);
 };
-// Active: appendImdNumber(), 213
-        // appendImdOperator(), 269
+
+function replaceOperator() {
+  if (!regexDecLeftHang.test(testDigit.textContent) ||
+    !regexDecRightHang.test(testDigit.textContent)) {
+    testDigit.textContent = testDigit.textContent.replace(regexOperator, this.textContent);
+    console.log('reopt working');
+    console.log(testDigit.textContent);
+  };
+}; 
+
+function appendImdOperator() {
+  if (!regexDecLeftHang.test(testDigit.textContent)) {
+    finalNumber();
+    imdDisplay = '';
+    testDigit.textContent = displayRespond.textContent + this.textContent;
+    for (const opt of clickOperator) {
+      opt.removeEventListener('click', appendImdOperator);
+    };
+    for (const opt of clickOperator) {
+      opt.addEventListener('click', replaceOperator);
+    };
+    clickDecimal.addEventListener('click', appendDecimal)
+    console.log('imopt working');
+    console.log(testDigit.textContent);
+  };
+};
 
 function roundToTwo(num) {
   return +(Math.round(num + "e+6")  + "e-6");
 }
 function finalNumber() {
   if (!regexDecLeftHang.test(testDigit.textContent) ||
-    !regexDecLeftHang.test(testDigit.textContent)) {
+    !regexDecRightHang.test(testDigit.textContent)) {
     if (regexPattern.test(testDigit.textContent)) {
-      console.log('finalNumber working');
       leftOfOperator = regexLeft.exec(testDigit.textContent);
       rightOfOperator = regexRight.exec(testDigit.textContent);
       foundOperator = regexOperator.exec(testDigit.textContent);
@@ -352,59 +268,61 @@ function finalNumber() {
         zeroReset.addEventListener('click', () => {
           zeroReset.addEventListener('click', clearAll)
         });
-      } else { sumResult = roundToTwo(sumResult);
+      } else {
+        sumResult = roundToTwo(sumResult);
         displayRespond.textContent = sumResult;
+        };
+        console.log('finalNumber working');
         for (const num of clickNumber) {
-          num.removeEventListener('click', appendNumber2);
+          num.removeEventListener('click', appendNumber);
         };
       };
     };
   };
-};
 
 function clearAll() {
-  displayRespond.textContent = 0;;
+  displayRespond.textContent = 0;
   testDigit.textContent = '';
   imdDisplay = '';
-  console.log('clearall working');
-  for (const num of clickNumber) {
-    num.removeEventListener('click', appendNumber2);
-  };
-  for (const num of clickNumber) {
-    num.removeEventListener('click', appendImdNumber);
-  };
   for (const opt of clickOperator) {
     opt.removeEventListener('click', appendImdOperator)
   };
   for (const opt of clickOperator) {
     opt.removeEventListener('click', replaceOperator)
   };
-  for (const opt of clickOperator) {
-    opt.removeEventListener('click', replaceImdOperator)
-  };
   for (const num of clickNumber) {
     num.addEventListener('click', appendNumber)
   };
-  for (const opt of clickOperator) {
-    opt.addEventListener('click', appendOperator)
-  };
   zeroReset.removeEventListener('click', clearAll);
   clickDecimal.addEventListener('click', appendDecimal);
+  console.log('clearall working');
 };
 
 function appendDecimal() {
+  if (regexDecAfterOpt.test(testDigit.textContent)) {
+    return;
+  };
   imdDisplay += this.textContent;
   displayRespond.textContent += this.textContent;
   testDigit.textContent += this.textContent;
-  this.removeEventListener('click', appendDecimal);
+  clickDecimal.removeEventListener('click', appendDecimal);
+  console.log(displayRespond.textContent);
   }; 
+
+// Decimals not coming back after removed
+function clearLastKey() {
+  imdDisplay = imdDisplay.slice(0, -1);
+  displayRespond.textContent = displayRespond.textContent.slice(0, -1);
+  testDigit.textContent = testDigit.textContent.slice(0, -1);
+  if (!regexDecLeftHang.test(imdDisplay) || 
+    !regexDecLeftHang.test(displayRespond.textContent) ||
+    !regexDecLeftHang.test(testDigit.textContent)) {
+    clickDecimal.addEventListener('click', appendDecimal);
+    };
+};
 
 for (const num of clickNumber) {
   num.addEventListener('click', appendNumber);
-};
-
-for (const opt of clickOperator) {
-  opt.addEventListener('click', appendOperator)
 };
 
 clickOperateNow.addEventListener('click', finalNumber);
@@ -413,74 +331,8 @@ clickClearAll.addEventListener('click', clearAll);
 
 clickDecimal.addEventListener('click', appendDecimal);
 
-// Prevent add operator after decimal
+// clickClearKey.addEventListener('click', clearLastKey);
 
-// Listen for clicks, record every number as number_input: 1, before any operator input clicked
-  // <First event listener>
-    // Create number input 1 <div>;
-    // Create operator <div>;
-    // Add id to number input 1 <div>;
-    // Add id to operator <div>;
-    // Query Select only numbers;
-    // For loop Query Select list;
-    // Add eventListener to for loop Constant;
-    // Display text content from for loop constant;
-    // Concatenate number to number input 1 <div>;
-    // If input is operator
-    // Store operator to operator <div>
-    // Stop first event listener>
-
-// As operator clicked, break number_input: 1 listener, record the operator, break operator listen
-// Listen for clicks, record every number as number_input: 2, before = button is clicked
-// As = button clicked, convert number input 1 & 2 to nunber, match operator input to operator function
-// run operator() with argument, ouput result to display
-
-  // <Second event listener>
-    // Create number input 2 <div>;
-    // Add id to number input 2 <div>;
-    // Query Select only numbers;
-    // For loop Query Select list;
-    // Add eventListener to for loop Constant;
-    // Display text content from for loop constant;
-    // Concatenate number to number input 1 <div>;
-    // If input is =;
-    // Pull values from <div>'s
-    // Store <div>'s value in variables;
-    // Match number parameters with number variables;
-    // Match operator parameter with operator variable;
-    // Run operator() with pulled value variables;
-    // Display operator() result;
-
-// After two numbers and an operator,
-// if an operator being pressed again,
-// calculate and display the result,
-// but not showing the operator.
-// As a number enter after the second operator,
-// calculate and display the result.
-// Repeat the process until = is entered,
-// calculate display the final result.
-
-// <Problems now facing with simple calculator>
-  // Should prevent chaining operators,
-  // but allow proceeding operator to be entered for immediate result,
-  // also replace each repeated operator to lastest one
-  // <Solution>
-    // Add event listener back after each proceeding operator;
-    // Wipe out previous operator, use latter one;
-
-  // Should implement calculating function for each proceeding operator.
-  // <Solution>
-    // Invoke calculator function for each proceeding operator;
-    // Text content immediate result;
-
-                          // Next     Next
-// (Display,,,,Storage,,,,Operator,,,,Number)
-// [2222+2222], 2222+2222,  +,        No,
-// [4444],      Empty,      No,       1111,
-// [1111],      4444+1111,  +,        No,
-// [5555],      Empty,      No,       1111,
-// [1111],      5555+1111,  +,        No,
-// [6666],      Empty       No,       1111,
-// [1111],      6666+1111   =,        No,
-// [7777],
-
+// let teststring = '1234567'
+// let stringdone = teststring.slice(0, -1);
+// console.log(stringdone);
