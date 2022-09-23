@@ -2,40 +2,89 @@
   margin: 0;
 }
 
+.background {
+  background-color: sandybrown;
+  height: 100vh
+}
+
 #calculatorBody {
-  width: 400px;
+  width: 350px;
   height: 600px;
-  border: 3px solid black;
+  /* border: 3px solid black; */
   /* background: rgb(243, 243, 243); */
-  background: black;
+  background: beige;
   border-radius: 25px;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   align-items: center;
+  padding: 60px 0 20px 0;
+  flex-direction: column;
+  /* flex-wrap: wrap; */
+  box-shadow: 0 20px 10px 2px rgba(0, 0, 0, 0.2);
 }
 
 .displayArea {
-  width: 250px;
-  height: 100px;
-  border: 3px solid grey ;
-  color: rgb(255, 169, 103);
+  width: 330px;
+  height: 180px;
+  /* border: 3px solid grey ; */
+  /* color: rgb(255, 169, 103); */
   background: black;
-  border-radius: 5px;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
   font-size: 32px;
   display: flex;
+  justify-content: center;
+  align-items: center;
+  /* margin: 30px; */
+  /* flex-grow: 0;
+  flex-direction: column; */
+  /* padding: 10px 1px 10px 1px; */
+  padding: 30px 0 10px 0;
+}
+
+#displayWindowOuter {
+  height: 120px;
+  width: 280px;
+  border: 2px solid whitesmoke;
+  flex: 0 0 auto;
+  border-radius: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 10px 0 10px;
+}
+
+#displayWindow {
+  width: 140px;
+  height: 50px;
+  /* border: 2px solid orange; */
+  display: flex;
   justify-content: flex-end;
+  align-items: center;
+  font-size: 40px;
+  flex: 0 1 auto;
+  padding: 0 10px 0 0;
+  background: midnightblue;
+  color: cyan;
+  box-shadow: inset 0 0 5px 3px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
 }
 
 #buttonArea {
   width: 300px;
-  height: 300px;
+  height: auto;
   /* border: 3px solid green; */
-  background: rgb(90, 88, 88);
+  background: dimgray;
   display: flex;
   flex-wrap: wrap;
-  padding: 30px;
-  border-radius: 5px;
+  padding: 50px 15px 15px 15px;
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+  /* border: 2px solid green; */
+  min-width: 0;
+  align-items: flex-start;
+  gap: 3px;
 }
 
 #buttonRow0,
@@ -44,6 +93,8 @@
 #buttonRow3 {
   display: flex;
   flex: 1 1 100%;
+  /* border: 2px solid red; */
+  min-width: 0;
 }
 
 .numberButton,
@@ -53,19 +104,23 @@
 .clearKey,
 .clearAll,
 .decimalButton {
-  border: 3px solid black;
-  flex: 1 1 0;
+  /* border: 3px solid black; */
+  flex: 1 1 100%;
   text-align: center;
   border-radius: 15px;
-  /* align-self: center; */
-  /* padding: 20px; */
-  /* margin: 3px */
-  ;}
+  align-self: center;
+  padding: 15px 0;
+  margin: 5px;
+  min-width: 0;
+  font-size: 20px;
+  font-family: sans-serif;
+  box-shadow: 0 3px 1px 0 rgba(0, 0, 0, 0.5);
+}
 
 .numberButton,
 .decimalButton {
-  background: grey;
-  color: whitesmoke;
+  background: beige;
+  color: black;
 }
 
 .operatorButton,
@@ -73,16 +128,12 @@
 .clearKey,
 .clearAll,
 .placeHolder {
-  background-color: rgb(55, 128, 255);
-  color: whitesmoke;
+  background-color: dodgerblue;
+  color: beige;
 
 }
 
 #− {
-  background: rgb(232, 62, 62);
-}
-
-.placeHolder {
-  visibility: hidden;
+  background: crimson;
 }
 

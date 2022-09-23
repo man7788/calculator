@@ -52,6 +52,9 @@ function operate(inputNum1, inputNum2, mathOperator) {
 // --------------------Display--------------------
 const displayRespond = document.querySelector('#displayWindow')
 displayRespond.textContent = 0;
+if (displayRespond.textContent.length > 6) {
+  displayRespond.textContent.slice(0, 7);
+};
 
 // --------------------Buttons--------------------
 let regexNum = /[0-9]/;
@@ -70,7 +73,7 @@ for (i = 0; i < 4; i++) {
   buttonRowList.push(buttonRow);
 }
 
-let buttonList = ['a', 7, 8, 9, '×', 'a', 4, 5, 6, '÷', 
+let buttonList = ['+−', 7, 8, 9, '×', '◄ ►', 4, 5, 6, '÷', 
    'CK', 1, 2, 3, '+', 'CA', 0, '.', '−', '=',];
   
 for (i = 0; i < 5; i++) {
@@ -304,6 +307,7 @@ function appendImdOperator() {
 function roundToN(num) {
   return +(Math.round(num + "e+6")  + "e-6");
 }
+
 function finalNumber() {
   if (!regexDecLeftHang.test(testDigit.textContent) ||
     !regexDecRightHang.test(testDigit.textContent)) {
