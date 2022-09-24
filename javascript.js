@@ -23,6 +23,7 @@ function divide(dividend, divisor) {
   return quotient;
 }
 
+// Replace operater!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 function operate(inputNum1, inputNum2, mathOperator) {
   let operatorList = {
     '+': 'add',
@@ -52,17 +53,16 @@ function operate(inputNum1, inputNum2, mathOperator) {
 // --------------------Display--------------------
 const displayRespond = document.querySelector('#displayWindow')
 displayRespond.textContent = 0;
-if (displayRespond.textContent.length > 6) {
-  displayRespond.textContent.slice(0, 7);
-};
 
 // --------------------Buttons--------------------
+// Replace operater!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 let regexNum = /[0-9]/;
 let regexOperator = /[×÷+−]/;
 let regexCK = /CK/;
 let regexCA = /CA/;
 let regexDecimal = /./;
 let regexOperate = /=/;
+let regexPosNeg = /\+\−/;
 let buttonRowList = [];
 
 let i = 0;
@@ -72,15 +72,19 @@ for (i = 0; i < 4; i++) {
   buttonArea.appendChild(buttonRow);
   buttonRowList.push(buttonRow);
 }
-
+// Replace operater!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 let buttonList = ['+−', 7, 8, 9, '×', '◄ ►', 4, 5, 6, '÷', 
    'CK', 1, 2, 3, '+', 'CA', 0, '.', '−', '=',];
-  
+
 for (i = 0; i < 5; i++) {
   const clickButton = document.createElement('div');
   if (regexNum.test(buttonList[i])) {
     clickButton.setAttribute('id', buttonList[i]);
     clickButton.classList.add('numberButton');
+    clickButton.textContent = buttonList[i];
+  } else if (regexPosNeg.test(buttonList[i])) {
+    clickButton.setAttribute('id', buttonList[i]);
+    clickButton.classList.add('posNeg');
     clickButton.textContent = buttonList[i];
   } else if (regexOperator.test(buttonList[i])) {
     clickButton.setAttribute('id', buttonList[i]);
@@ -171,6 +175,8 @@ const clickOperateNow = document.querySelector('.operateNow');
 const clickClearKey = document.querySelector('.clearKey');
 const clickClearAll = document.querySelector('.clearAll');
 const clickDecimal = document.querySelector('.decimalButton');
+const clickPosNeg = document.querySelector('.posNeg');
+
 const zeroReset = document.querySelector('#buttonArea');
 
 let testDigit = document.createElement('div');
@@ -179,26 +185,28 @@ let imdDisplay = '';
 let leftOfOperator 
 let rightOfOperator;
 let foundOperator;
-let regexLeft = /\d*\.?\d+/;
-let regexRight = /\d*\.*\d+$/;
-let regexPattern = /\d+[×÷+−]\d/;
-
+let regexLeft = /-*\d*\.?\d+/;
+let regexRight = /-*d*\.*\d+$/;
+let regexPattern = /\d+[×÷+−]\-*\d/;
+// Replace operater!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 let regexDecLeftHang = /\d+\.$/;
-let regexDecRightHang = /[×÷+−<=?]\d+\.$/;
-
+let regexDecRightHang = /[×÷+−<=?]-*\d+\.$/;
+// Replace operater!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 let regexDecimalLeft = /\d+\./;
-let regexDecimalRight = /[×÷+−<=?]\d+\./;
-
+let regexDecimalRight = /[×÷+−<=?]-*\d+\./;
+// Replace operater!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 let regexDecAfterOpt = /\d+[×÷+−]$/
 let zeroDecimal = /0\.$/;
 let chainingZero = /^0$/;
 
-// let testFor = '3'
-// let testDone = regexDecimalLeft.test(testFor);
+let testFor = '-5'
+let testDone = regexRight.test(testFor);
 // let testDone2 = regexDecRightHang.test(testFor);
-// console.log(testDone);
+console.log(testDone);
 // console.log(testDone2);
 
+// Not allow deciaml after 7 digits
+// Allow beginning 0 calculation 
 // Not allow Chaining zero
 // Not allow Chaining 0......
 // Not allow leading zero
@@ -207,8 +215,9 @@ let chainingZero = /^0$/;
 // Not allow deciaml after deciaml
 function appendNumber() {
   if (chainingZero.test(displayRespond.textContent) &&
-    chainingZero.test(this.textContent)) {
-    // console.log('No chaining zero');
+    chainingZero.test(this.textContent) &&
+    chainingZero.test(testDigit.textContent)) {
+    console.log('No chaining zero');
     return;
     };
   if (zeroDecimal.test(displayRespond.textContent)) {
@@ -221,6 +230,8 @@ function appendNumber() {
     // console.log('Normal number input');
   };
   testDigit.textContent += this.textContent;
+  testDigit.textContent = testDigit.textContent.slice(0, 7);
+  displayRespond.textContent = displayRespond.textContent.slice(0, 7);
   for (const opt of clickOperator) {
     opt.addEventListener('click', appendOperator);
   };
@@ -231,7 +242,8 @@ function appendNumber() {
 // Not allow operator hanging decimal
 // Not allow chaining operator
 function appendOperator() {
-  if (!regexDecLeftHang.test(displayRespond.textContent)) {
+  if (!regexDecLeftHang.test(displayRespond.textContent) ||
+  chainingZero.test(displayRespond.textContent)) {
     testDigit.textContent = displayRespond.textContent + this.textContent;
     imdDisplay = '';
     for (const opt of clickOperator) {
@@ -247,7 +259,10 @@ function appendOperator() {
       opt.addEventListener('click', appendImdNumber);
     };
     clickDecimal.addEventListener('click', appendDecimal)
+    clickPosNeg.removeEventListener('click', changeImdPosNeg)
+    clickPosNeg.addEventListener('click', changePosNeg)
     console.log(testDigit.textContent);
+    console.log('appendOperator working');
   };
 };
 
@@ -272,7 +287,8 @@ function appendImdNumber() {
   imdDisplay += this.textContent;
   displayRespond.textContent = imdDisplay;
   testDigit.textContent += this.textContent;
-  console.log('appendImdNumber working');
+  testDigit.textContent = testDigit.textContent.slice(0, 14);
+  displayRespond.textContent = displayRespond.textContent.slice(0, 7);
   for (const opt of clickOperator) {
     opt.removeEventListener('click', replaceOperator);
   };
@@ -280,6 +296,7 @@ function appendImdNumber() {
     opt.addEventListener('click', appendImdOperator);
   };
   console.log(testDigit.textContent);
+  console.log('appendImdNumber working');
 };
 
 function appendImdOperator() {
@@ -297,17 +314,23 @@ function appendImdOperator() {
     for (const num of clickNumber) {
       num.addEventListener('click', appendImdNumber);
     };  
-    clickDecimal.addEventListener('click', appendDecimal)
+    clickDecimal.addEventListener('click', appendDecimal);
     clickClearKey.addEventListener('click', clearLastKey);
+    clickPosNeg.removeEventListener('click', changeImdPosNeg);
+    clickPosNeg.addEventListener('click', changePosNeg);
     console.log('appendImdOperator working');
     console.log(testDigit.textContent);
+
   };
 };
 
 function roundToN(num) {
-  return +(Math.round(num + "e+6")  + "e-6");
+  return +(Math.round(num + "e+5")  + "e-5");
 }
 
+// If number longer than 7 digit, flex-start
+// Allow Final result only 6 digits
+// Not Allow Negative result overflowing, flex-start
 function finalNumber() {
   if (!regexDecLeftHang.test(testDigit.textContent) ||
     !regexDecRightHang.test(testDigit.textContent)) {
@@ -317,8 +340,10 @@ function finalNumber() {
       foundOperator = regexOperator.exec(testDigit.textContent);
       leftOfOperator = Number(leftOfOperator[0]);
       rightOfOperator = Number(rightOfOperator[0]);
+      console.log(leftOfOperator);
+      console.log(rightOfOperator);
       let sumResult = operate(leftOfOperator, rightOfOperator, foundOperator);
-      console.log(isNaN(sumResult));
+      // console.log(isNaN(sumResult));
       if (isNaN(sumResult)) {
         displayRespond.textContent = sumResult;
         zeroReset.addEventListener('click', () => {
@@ -327,8 +352,17 @@ function finalNumber() {
       } else {
         sumResult = roundToN(sumResult);
         displayRespond.textContent = sumResult;
+        console.log(sumResult);
+        // if (displayRespond.textContent > 0 &&
+        //   displayRespond.textContent.length > 7) {
+        //     displayRespond.textContent = 
+        //     displayRespond.textContent.slice(0, 7)
+        //   } else if (displayRespond.textContent < 0 &&
+        //     displayRespond.textContent.length > 7) {
+        //       displayRespond.textContent = 
+        //       displayRespond.textContent.slice(0, 7)
+        //     };
         };
-        console.log('finalNumber working');
         for (const num of clickNumber) {
           num.removeEventListener('click', appendNumber);
         for (const num of clickNumber) {
@@ -336,9 +370,14 @@ function finalNumber() {
         };
         clickDecimal.removeEventListener('click', appendDecimal);
         clickClearKey.removeEventListener('click', clearLastKey);
+        clickPosNeg.removeEventListener('click', changePosNeg)
+        clickPosNeg.addEventListener('click', changeImdPosNeg)
         };
       };
     };
+    console.log('finalNumber working');
+    console.log(displayRespond.textContent);
+    console.log(testDigit.textContent);
   };
 
 function clearAll() {
@@ -348,8 +387,8 @@ function clearAll() {
   for (const num of clickNumber) {
     num.addEventListener('click', appendNumber)
   };
-  for (const opt of clickOperator) {
-    opt.removeEventListener('click', appendOperator)
+  for (const num of clickOperator) {
+    num.addEventListener('click', appendOperator);
   };
   for (const num of clickNumber) {
     num.removeEventListener('click', appendImdNumber)
@@ -366,7 +405,8 @@ function clearAll() {
 };
 
 function appendDecimal() {
-  if (regexDecAfterOpt.test(testDigit.textContent)) {
+  if (regexDecAfterOpt.test(testDigit.textContent) ||
+  displayRespond.textContent.length === 7) {
     return;
   };
   imdDisplay += this.textContent;
@@ -374,6 +414,7 @@ function appendDecimal() {
   testDigit.textContent += this.textContent;
   clickDecimal.removeEventListener('click', appendDecimal);
   console.log(displayRespond.textContent);
+  console.log('appendDecimal working');
   }; 
 
 function clearLastKey() {
@@ -390,10 +431,66 @@ function clearLastKey() {
   if (displayRespond.textContent.length === 0) {
     displayRespond.textContent = 0;
   };
+  console.log('clearLastKey working');
+};
+
+function changePosNeg() {
+  if (testDigit.textContent > 0 && 
+    !regexDecLeftHang.test(testDigit.textContent)) {
+      let negNumber = -Math.abs(displayRespond.textContent);
+      displayRespond.textContent = negNumber;
+      testDigit.textContent = negNumber;
+      console.log('Left negNum working');
+  } else if (testDigit.textContent < 0 && 
+    regexLeft.test(testDigit.textContent) &&
+    !regexDecLeftHang.test(testDigit.textContent)) {
+      let posNumber = Math.abs(displayRespond.textContent)
+      displayRespond.textContent = posNumber;
+      testDigit.textContent = posNumber;
+      console.log('Left posNum working');
+    } else if (displayRespond.textContent > 0 &&
+    regexRight.test(testDigit.textContent) &&
+    !regexDecRightHang.test(testDigit.textContent)) {
+      let negNumber = -Math.abs(displayRespond.textContent);
+      displayRespond.textContent = negNumber;
+      testDigit.textContent = testDigit.textContent.replace(regexRight, negNumber);
+      console.log('Right negNum working');  
+  } else if (displayRespond.textContent < 0 &&
+    regexRight.test(testDigit.textContent) &&
+    !regexDecRightHang.test(testDigit.textContent)) {
+      let posNumber = Math.abs(displayRespond.textContent);
+      displayRespond.textContent = posNumber;
+      testDigit.textContent = testDigit.textContent.replace(regexRight, posNumber);
+      console.log('Right posNum working');
+    };
+  // console.log('changePosNeg working');
+  console.log(testDigit.textContent);
+};
+
+function changeImdPosNeg() {
+  if (displayRespond.textContent > 0) {
+      let negNumber = -Math.abs(displayRespond.textContent);
+      displayRespond.textContent = negNumber;
+      testDigit.textContent = negNumber;
+      console.log('Left ImdnegNum working');
+  } else if (displayRespond.textContent < 0) {
+      let posNumber = Math.abs(displayRespond.textContent)
+      displayRespond.textContent = posNumber;
+      testDigit.textContent = posNumber;
+      console.log('Left ImdposNum working');
+    };
+    for (const num of clickOperator) {
+      num.addEventListener('click', appendOperator);
+  };
+  // console.log('changeImdPosNeg working');
 };
 
 for (const num of clickNumber) {
   num.addEventListener('click', appendNumber);
+};
+
+for (const num of clickOperator) {
+  num.addEventListener('click', appendOperator);
 };
 
 clickOperateNow.addEventListener('click', finalNumber);
@@ -404,6 +501,10 @@ clickDecimal.addEventListener('click', appendDecimal);
 
 clickClearKey.addEventListener('click', clearLastKey);
 
+clickPosNeg.addEventListener('click', changePosNeg)
+
+// // --------------------Keyboard Support--------------------
+// Replace operater!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 let keyboardList = {
   Enter: '=',
   Backspace: 'CK',
@@ -421,4 +522,3 @@ window.addEventListener('keydown', (e) => {
   };
   document.getElementById(e.key).click();
 });
-

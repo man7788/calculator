@@ -55,6 +55,11 @@
   padding: 0 10px 0 10px;
 }
 
+#displayWindow::-webkit-scrollbar {
+  display: none;
+}
+
+
 #displayWindow {
   width: 140px;
   height: 50px;
@@ -64,11 +69,12 @@
   align-items: center;
   font-size: 40px;
   flex: 0 1 auto;
-  padding: 0 10px 0 0;
-  background: midnightblue;
+  padding: 0 6px 0 6px;
+  background: white;
   color: cyan;
   box-shadow: inset 0 0 5px 3px rgba(0, 0, 0, 0.5);
-  overflow: hidden;
+  /* overflow: scroll; */
+  text-align: center;
 }
 
 #buttonArea {
@@ -103,7 +109,8 @@
 .operateNow,
 .clearKey,
 .clearAll,
-.decimalButton {
+.decimalButton,
+.posNeg {
   /* border: 3px solid black; */
   flex: 1 1 100%;
   text-align: center;
@@ -127,7 +134,8 @@
 .operateNow,
 .clearKey,
 .clearAll,
-.placeHolder {
+.placeHolder,
+.posNeg {
   background-color: dodgerblue;
   color: beige;
 
