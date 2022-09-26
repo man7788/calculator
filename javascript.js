@@ -193,14 +193,16 @@ let regexDecLeftHang = /\d+\.$/;
 let regexDecRightHang = /[×÷+−<=?]-*\d+\.$/;
 // Replace operater!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 let regexDecimalLeft = /\d+\./;
-let regexDecimalRight = /[×÷+−<=?]-*\d+\./;
+let regexDecimalRight = /(?<=[×÷+−])-*\d+\./;
 // Replace operater!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 let regexDecAfterOpt = /\d+[×÷+−]$/
 let zeroDecimal = /0\.$/;
 let chainingZero = /^0$/;
+let anyAfterOperator = /(?<=[×÷+−]).*/;
+// let nothingAfterOpertor = /.+([×÷+−]<=?)/;
 
-let testFor = '-5'
-let testDone = regexRight.test(testFor);
+let testFor = '3.2+5.5'
+let testDone = regexDecimalRight.test(testFor);
 // let testDone2 = regexDecRightHang.test(testFor);
 console.log(testDone);
 // console.log(testDone2);
@@ -335,8 +337,9 @@ function finalNumber() {
   if (!regexDecLeftHang.test(testDigit.textContent) ||
     !regexDecRightHang.test(testDigit.textContent)) {
     if (regexPattern.test(testDigit.textContent)) {
+      console.log(testDigit.textContent);
       leftOfOperator = regexLeft.exec(testDigit.textContent);
-      rightOfOperator = regexRight.exec(testDigit.textContent);
+      rightOfOperator = anyAfterOperator.exec(testDigit.textContent);
       foundOperator = regexOperator.exec(testDigit.textContent);
       leftOfOperator = Number(leftOfOperator[0]);
       rightOfOperator = Number(rightOfOperator[0]);
@@ -417,6 +420,7 @@ function appendDecimal() {
   console.log('appendDecimal working');
   }; 
 
+// Not allow leftover negative sign
 function clearLastKey() {
   if (!regexDecAfterOpt.test(testDigit.textContent)) {
   imdDisplay = imdDisplay.slice(0, -1);
@@ -453,14 +457,14 @@ function changePosNeg() {
     !regexDecRightHang.test(testDigit.textContent)) {
       let negNumber = -Math.abs(displayRespond.textContent);
       displayRespond.textContent = negNumber;
-      testDigit.textContent = testDigit.textContent.replace(regexRight, negNumber);
+      testDigit.textContent = testDigit.textContent.replace(anyAfterOperator, negNumber);
       console.log('Right negNum working');  
   } else if (displayRespond.textContent < 0 &&
     regexRight.test(testDigit.textContent) &&
     !regexDecRightHang.test(testDigit.textContent)) {
       let posNumber = Math.abs(displayRespond.textContent);
       displayRespond.textContent = posNumber;
-      testDigit.textContent = testDigit.textContent.replace(regexRight, posNumber);
+      testDigit.textContent = testDigit.textContent.replace(anyAfterOperator, posNumber);
       console.log('Right posNum working');
     };
   // console.log('changePosNeg working');
