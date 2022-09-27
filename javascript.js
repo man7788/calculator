@@ -187,7 +187,7 @@ const zeroReset = document.querySelector('#buttonArea');
 
 let testDigit = document.createElement('div');
 let imdDisplay = '';
-let windowFlex = document.querySelector('#displayWindow')
+let globalSumResult = document.createElement('div');
 
 let leftOfOperator 
 let rightOfOperator;
@@ -409,6 +409,7 @@ function finalNumber() {
       } else {
         sumResult = roundToN(sumResult);
         displayRespond.textContent = sumResult;
+        globalSumResult.textContent = sumResult;
         console.log(sumResult);
         };
         for (const num of clickNumber) {
@@ -433,6 +434,8 @@ function finalNumber() {
         clickClearKey.removeEventListener('click', clearLastKey);
         clickPosNeg.removeEventListener('click', changePosNeg);
         clickPosNeg.addEventListener('click', changeImdPosNeg);
+        clickDecShift.removeEventListener('click', showFirstSix);
+        clickDecShift.addEventListener('click', showLastSix);
         };
       };
     };
@@ -556,34 +559,31 @@ function changeImdPosNeg() {
   // console.log('changeImdPosNeg working');
 };
 
-function shiftDecrease() {
-  if (displayWindow.scrollLeft > 0) {
-  displayWindow.scrollLeft -= 20;
-  scrollCount -= 20;
-  console.log(displayWindow.scrollLeft);
-  console.log(scrollCount);
+function showFirstSix() {
+  if (globalSumResult.textContent > 0 &&
+    regexDecimalLeft.test(globalSumResult.textContent)) {
+    displayRespond.textContent = globalSumResult.textContent.slice(0, 7);
+  } else if (globalSumResult.textContent < 0 &&
+    regexDecimalLeft.test(globalSumResult.textContent)) {
+    displayRespond.textContent = globalSumResult.textContent.slice(0, 8);
+  } else if (globalSumResult.textContent > 0 &&
+    !regexDecimalLeft.test(globalSumResult.textContent)) {
+    displayRespond.textContent = globalSumResult.textContent.slice(0, 6);
+  } else if (globalSumResult.textContent < 0 &&
+    regexDecimalLeft.test(globalSumResult.textContent)) {
+    displayRespond.textContent = globalSumResult.textContent.slice(0, 7);
   };
-  if (displayWindow.scrollLeft === 0)  {
-    clickDecShift.removeEventListener('click', shiftDecrease);
-    clickDecShift.addEventListener('click', shiftIncrease);
-  }
+  clickDecShift.removeEventListener('click', showFirstSix);
+  clickDecShift.addEventListener('click', showLastSix);
+  console.log(globalSumResult.textContent);
 };
 
-function shiftIncrease() {
-  displayWindow.scrollLeft += 20;
-  scrollCount += 20;
-  // if (scrollCount < displayWindow.scrollLeft) {
-  //   displayWindow.scrollLef += 20;
-  //   scrollCount += 20;
-    console.log(displayWindow.scrollLeft);
-    console.log(scrollCount);
-  // };
-  if (scrollCount > displayWindow.scrollLeft)  {
-    clickDecShift.removeEventListener('click', shiftIncrease);
-    clickDecShift.addEventListener('click', shiftDecrease);
-  }
+function showLastSix() {
+  displayRespond.textContent = globalSumResult.textContent.slice(-6);
+  clickDecShift.removeEventListener('click', showLastSix);
+  clickDecShift.addEventListener('click', showFirstSix);
+  console.log(globalSumResult.textContent);
 };
-
 
 for (const num of clickNumber) {
   num.addEventListener('click', appendNumber);
@@ -603,18 +603,7 @@ clickClearKey.addEventListener('click', clearLastKey);
 
 clickPosNeg.addEventListener('click', changePosNeg);
 
-
-// Click once to scroll right,
-// number will increase by 20.
-// When next number is not increasing,
-// scroll process reverse,
-// next number decrease by 20.
-// When number reaches 0,
-// number will increase again.
-
-clickDecShift.addEventListener('click', shiftIncrease);
-let scrollCount = 0;
-
+clickDecShift.addEventListener('click', showLastSix);
 
 
 // // --------------------Keyboard Support--------------------
