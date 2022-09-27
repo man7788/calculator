@@ -53,28 +53,29 @@
   justify-content: center;
   align-items: center;
   padding: 0 10px 0 10px;
+  min-width: 0;
 }
 
 #displayWindow::-webkit-scrollbar {
   display: none;
 }
 
-
 #displayWindow {
+  display: flex;
   width: 140px;
   height: 50px;
+  min-width: 0;
   /* border: 2px solid orange; */
-  display: flex;
   justify-content: flex-end;
   align-items: center;
-  font-size: 40px;
-  flex: 0 1 auto;
-  padding: 0 6px 0 6px;
+  font-size: 30px;
+  flex: 0 0 auto;
+  padding: 0 10px 0 10px;
   background: white;
   color: cyan;
   box-shadow: inset 0 0 5px 3px rgba(0, 0, 0, 0.5);
-  /* overflow: scroll; */
-  text-align: center;
+  overflow: scroll;
+  font-family: Courier New, sans-serif;
 }
 
 #buttonArea {
@@ -110,7 +111,8 @@
 .clearKey,
 .clearAll,
 .decimalButton,
-.posNeg {
+.posNeg,
+.decimalShift {
   /* border: 3px solid black; */
   flex: 1 1 100%;
   text-align: center;
@@ -135,7 +137,8 @@
 .clearKey,
 .clearAll,
 .placeHolder,
-.posNeg {
+.posNeg,
+.decimalShift {
   background-color: dodgerblue;
   color: beige;
 

@@ -63,6 +63,7 @@ let regexCA = /CA/;
 let regexDecimal = /./;
 let regexOperate = /=/;
 let regexPosNeg = /\+\−/;
+let regexDecShift = /◄ ►/;
 let buttonRowList = [];
 
 let i = 0;
@@ -103,6 +104,10 @@ for (i = 5; i < 10; i++) {
   if (regexNum.test(buttonList[i])) {
     clickButton.setAttribute('id', buttonList[i]);
     clickButton.classList.add('numberButton');
+    clickButton.textContent = buttonList[i];
+  } else if (regexDecShift.test(buttonList[i])) {
+    clickButton.setAttribute('id', buttonList[i]);
+    clickButton.classList.add('decimalShift');
     clickButton.textContent = buttonList[i];
   } else if (regexOperator.test(buttonList[i])) {
     clickButton.setAttribute('id', buttonList[i]);
@@ -176,11 +181,13 @@ const clickClearKey = document.querySelector('.clearKey');
 const clickClearAll = document.querySelector('.clearAll');
 const clickDecimal = document.querySelector('.decimalButton');
 const clickPosNeg = document.querySelector('.posNeg');
+const clickDecShift = document.querySelector('.decimalShift');
 
 const zeroReset = document.querySelector('#buttonArea');
 
 let testDigit = document.createElement('div');
 let imdDisplay = '';
+let windowFlex = document.querySelector('#displayWindow')
 
 let leftOfOperator 
 let rightOfOperator;
@@ -192,7 +199,7 @@ let regexPattern = /\d+[×÷+−]\-*\d/;
 let regexDecLeftHang = /\d+\.$/;
 let regexDecRightHang = /[×÷+−<=?]-*\d+\.$/;
 // Replace operater!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-let regexDecimalLeft = /\d+\./;
+let regexDecimalLeft = /-*\d+\./;
 let regexDecimalRight = /(?<=[×÷+−])-*\d+\./;
 // Replace operater!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 let regexDecAfterOpt = /\d+[×÷+−]$/
@@ -201,8 +208,8 @@ let chainingZero = /^0$/;
 let anyAfterOperator = /(?<=[×÷+−]).*/;
 // let nothingAfterOpertor = /.+([×÷+−]<=?)/;
 
-let testFor = '3.2+5.5'
-let testDone = regexDecimalRight.test(testFor);
+let testFor = '-3.2222'
+let testDone = regexDecimalLeft.test(testFor);
 // let testDone2 = regexDecRightHang.test(testFor);
 console.log(testDone);
 // console.log(testDone2);
@@ -222,18 +229,40 @@ function appendNumber() {
     console.log('No chaining zero');
     return;
     };
-  if (zeroDecimal.test(displayRespond.textContent)) {
+  if (chainingZero.test(displayRespond.textContent) &&
+  !chainingZero.test(this.textContent)) {
+    imdDisplay = this.textContent;
+    displayRespond.textContent = imdDisplay;
+  } else if (zeroDecimal.test(displayRespond.textContent)) {
     imdDisplay = displayRespond.textContent + this.textContent;
     displayRespond.textContent = imdDisplay;
     // console.log('No 0......');
   } else {
-    imdDisplay += this.textContent;
-    displayRespond.textContent = imdDisplay;
-    // console.log('Normal number input');
+  imdDisplay += this.textContent;
+  displayRespond.textContent = imdDisplay;
   };
+    // console.log('Normal number input');
   testDigit.textContent += this.textContent;
-  testDigit.textContent = testDigit.textContent.slice(0, 7);
-  displayRespond.textContent = displayRespond.textContent.slice(0, 7);
+
+  if (displayRespond.textContent > 0 &&
+    regexDecimalLeft.test(displayRespond.textContent)) {
+    displayRespond.textContent = displayRespond.textContent.slice(0, 7);
+    testDigit.textContent = testDigit.textContent.slice(0, 7);
+  } else if (displayRespond.textContent < 0 &&
+      regexDecimalLeft.test(displayRespond.textContent)) {
+    displayRespond.textContent = displayRespond.textContent.slice(0, 8);
+    testDigit.textContent = testDigit.textContent.slice(0, 8);
+    console.log('yes');
+  } else if (displayRespond.textContent > 0 &&
+    !regexDecimalLeft.test(displayRespond.textContent)) {
+    displayRespond.textContent = displayRespond.textContent.slice(0, 6);
+    testDigit.textContent = testDigit.textContent.slice(0, 6);
+  } else if (displayRespond.textContent < 0 &&
+  !regexDecimalLeft.test(displayRespond.textContent)) {
+    displayRespond.textContent = displayRespond.textContent.slice(0, 7);
+    testDigit.textContent = testDigit.textContent.slice(0, 7);
+  };
+
   for (const opt of clickOperator) {
     opt.addEventListener('click', appendOperator);
   };
@@ -289,8 +318,33 @@ function appendImdNumber() {
   imdDisplay += this.textContent;
   displayRespond.textContent = imdDisplay;
   testDigit.textContent += this.textContent;
-  testDigit.textContent = testDigit.textContent.slice(0, 14);
-  displayRespond.textContent = displayRespond.textContent.slice(0, 7);
+
+  if (displayRespond.textContent > 0 &&
+    regexDecimalLeft.test(displayRespond.textContent)) {
+    let replaceTestDigitDot = displayRespond.textContent.slice(0, 7);
+    displayRespond.textContent = displayRespond.textContent.slice(0, 7);
+    testDigit.textContent = 
+    testDigit.textContent.replace(anyAfterOperator, replaceTestDigitDot);
+  } else if (displayRespond.textContent < 0 &&
+    regexDecimalLeft.test(displayRespond.textContent)) {
+    let replaceTestDigitDot = displayRespond.textContent.slice(0, 8);
+    displayRespond.textContent = displayRespond.textContent.slice(0, 8);
+    testDigit.textContent = 
+    testDigit.textContent.replace(anyAfterOperator, replaceTestDigitDot);
+  } else if (displayRespond.textContent > 0 &&
+    !regexDecimalLeft.test(displayRespond.textContent)) {
+    let replaceTestDigitDot = displayRespond.textContent.slice(0, 6);
+    displayRespond.textContent = displayRespond.textContent.slice(0, 6);
+    testDigit.textContent = 
+    testDigit.textContent.replace(anyAfterOperator, replaceTestDigitDot);
+  } else if (displayRespond.textContent < 0 &&
+    !regexDecimalLeft.test(displayRespond.textContent)) {
+    let replaceTestDigitDot = displayRespond.textContent.slice(0, 7);
+    displayRespond.textContent = displayRespond.textContent.slice(0, 7);
+    testDigit.textContent = 
+    testDigit.textContent.replace(anyAfterOperator, replaceTestDigitDot);
+  };
+
   for (const opt of clickOperator) {
     opt.removeEventListener('click', replaceOperator);
   };
@@ -356,25 +410,29 @@ function finalNumber() {
         sumResult = roundToN(sumResult);
         displayRespond.textContent = sumResult;
         console.log(sumResult);
-        // if (displayRespond.textContent > 0 &&
-        //   displayRespond.textContent.length > 7) {
-        //     displayRespond.textContent = 
-        //     displayRespond.textContent.slice(0, 7)
-        //   } else if (displayRespond.textContent < 0 &&
-        //     displayRespond.textContent.length > 7) {
-        //       displayRespond.textContent = 
-        //       displayRespond.textContent.slice(0, 7)
-        //     };
         };
         for (const num of clickNumber) {
           num.removeEventListener('click', appendNumber);
         for (const num of clickNumber) {
           num.removeEventListener('click', appendImdNumber);
         };
+        if (displayRespond.textContent > 0 &&
+          regexDecimalLeft.test(displayRespond.textContent)) {
+          displayRespond.textContent = displayRespond.textContent.slice(0, 7)
+        } else if (displayRespond.textContent < 0 &&
+          regexDecimalLeft.test(displayRespond.textContent)) {
+          displayRespond.textContent = displayRespond.textContent.slice(0, 8)
+        } else if (displayRespond.textContent > 0 &&
+          !regexDecimalLeft.test(displayRespond.textContent)) {
+          displayRespond.textContent = displayRespond.textContent.slice(0, 6)
+        } else if (displayRespond.textContent < 0 &&
+          !regexDecimalLeft.test(displayRespond.textContent)) {
+          displayRespond.textContent = displayRespond.textContent.slice(0, 7)
+        };
         clickDecimal.removeEventListener('click', appendDecimal);
         clickClearKey.removeEventListener('click', clearLastKey);
-        clickPosNeg.removeEventListener('click', changePosNeg)
-        clickPosNeg.addEventListener('click', changeImdPosNeg)
+        clickPosNeg.removeEventListener('click', changePosNeg);
+        clickPosNeg.addEventListener('click', changeImdPosNeg);
         };
       };
     };
@@ -404,6 +462,7 @@ function clearAll() {
   };
   zeroReset.removeEventListener('click', clearAll);
   clickDecimal.addEventListener('click', appendDecimal);
+  // windowFlex.style.justifyContent = 'flex-end';
   console.log('clearall working');
 };
 
@@ -420,10 +479,11 @@ function appendDecimal() {
   console.log('appendDecimal working');
   }; 
 
-// Not allow leftover negative sign
+// Allow decimal key function comeback
 function clearLastKey() {
   if (!regexDecAfterOpt.test(testDigit.textContent)) {
-  imdDisplay = imdDisplay.slice(0, -1);
+  let stringImdDisplay = imdDisplay.toString();
+  imdDisplay = stringImdDisplay.slice(0, -1);
   displayRespond.textContent = displayRespond.textContent.slice(0, -1);
   testDigit.textContent = testDigit.textContent.slice(0, -1);
   };
@@ -435,6 +495,9 @@ function clearLastKey() {
   if (displayRespond.textContent.length === 0) {
     displayRespond.textContent = 0;
   };
+  if (!regexDecLeftHang.test(displayRespond.textContent)) {
+  clickDecimal.addEventListener('click', appendDecimal);
+  };
   console.log('clearLastKey working');
 };
 
@@ -442,6 +505,7 @@ function changePosNeg() {
   if (testDigit.textContent > 0 && 
     !regexDecLeftHang.test(testDigit.textContent)) {
       let negNumber = -Math.abs(displayRespond.textContent);
+      imdDisplay = negNumber;
       displayRespond.textContent = negNumber;
       testDigit.textContent = negNumber;
       console.log('Left negNum working');
@@ -449,6 +513,7 @@ function changePosNeg() {
     regexLeft.test(testDigit.textContent) &&
     !regexDecLeftHang.test(testDigit.textContent)) {
       let posNumber = Math.abs(displayRespond.textContent)
+      imdDisplay = posNumber;
       displayRespond.textContent = posNumber;
       testDigit.textContent = posNumber;
       console.log('Left posNum working');
@@ -456,6 +521,7 @@ function changePosNeg() {
     regexRight.test(testDigit.textContent) &&
     !regexDecRightHang.test(testDigit.textContent)) {
       let negNumber = -Math.abs(displayRespond.textContent);
+      imdDisplay = negNumber;
       displayRespond.textContent = negNumber;
       testDigit.textContent = testDigit.textContent.replace(anyAfterOperator, negNumber);
       console.log('Right negNum working');  
@@ -463,6 +529,7 @@ function changePosNeg() {
     regexRight.test(testDigit.textContent) &&
     !regexDecRightHang.test(testDigit.textContent)) {
       let posNumber = Math.abs(displayRespond.textContent);
+      imdDisplay = posNumber;
       displayRespond.textContent = posNumber;
       testDigit.textContent = testDigit.textContent.replace(anyAfterOperator, posNumber);
       console.log('Right posNum working');
@@ -489,6 +556,35 @@ function changeImdPosNeg() {
   // console.log('changeImdPosNeg working');
 };
 
+function shiftDecrease() {
+  if (displayWindow.scrollLeft > 0) {
+  displayWindow.scrollLeft -= 20;
+  scrollCount -= 20;
+  console.log(displayWindow.scrollLeft);
+  console.log(scrollCount);
+  };
+  if (displayWindow.scrollLeft === 0)  {
+    clickDecShift.removeEventListener('click', shiftDecrease);
+    clickDecShift.addEventListener('click', shiftIncrease);
+  }
+};
+
+function shiftIncrease() {
+  displayWindow.scrollLeft += 20;
+  scrollCount += 20;
+  // if (scrollCount < displayWindow.scrollLeft) {
+  //   displayWindow.scrollLef += 20;
+  //   scrollCount += 20;
+    console.log(displayWindow.scrollLeft);
+    console.log(scrollCount);
+  // };
+  if (scrollCount > displayWindow.scrollLeft)  {
+    clickDecShift.removeEventListener('click', shiftIncrease);
+    clickDecShift.addEventListener('click', shiftDecrease);
+  }
+};
+
+
 for (const num of clickNumber) {
   num.addEventListener('click', appendNumber);
 };
@@ -505,7 +601,21 @@ clickDecimal.addEventListener('click', appendDecimal);
 
 clickClearKey.addEventListener('click', clearLastKey);
 
-clickPosNeg.addEventListener('click', changePosNeg)
+clickPosNeg.addEventListener('click', changePosNeg);
+
+
+// Click once to scroll right,
+// number will increase by 20.
+// When next number is not increasing,
+// scroll process reverse,
+// next number decrease by 20.
+// When number reaches 0,
+// number will increase again.
+
+clickDecShift.addEventListener('click', shiftIncrease);
+let scrollCount = 0;
+
+
 
 // // --------------------Keyboard Support--------------------
 // Replace operater!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
